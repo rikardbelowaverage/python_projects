@@ -1,0 +1,35 @@
+% School task in Python, calculating how hard a text is to read
+
+words = 0
+sentences = 0
+longWords = 0
+lix = 0
+frequency = {}
+
+f = open("arbetsskydd1902.txt", "r") 
+line = f.read()
+f.close()
+sentences = line.count(".")
+line = line.strip(".")
+line = line.strip(",")
+line = line.strip("'")
+lines = line.split()
+frequency = {}
+
+
+for word in lines:
+    if(len(word) > 6):
+        longWords += 1;
+    words += 1
+    if word in frequency:
+        frequency[word] += 1
+    else:
+        frequency.update({word: 1})
+
+sorted_keys = sorted(frequency, key=frequency.__getitem__)
+sorted_keys.reverse()
+lix = (words/sentences) + ((longWords*100)/words)
+#print(frequency)
+
+print(sorted_keys[0:10])
+print(lix)
