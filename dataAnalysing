@@ -1,0 +1,67 @@
+import csv # Helps reading csv-files
+import calendar # Used to print the name of a month when given a number
+import statistics # Used for the calculation of mean
+import datetime # Used for tranforming dates in the file
+from scipy import stats # Used for more advanced statistics
+
+class EnergiData:
+    def __init__(self, filename):
+        file = open(filename)
+        lines = csv.reader(file, delimiter=';')
+        self.data = []
+        for stamp in lines:
+            try:
+                date = datetime.datetime.fromisoformat(stamp[5])
+                consumption = float(stamp[2])
+                rowdata=(date, consumption)
+                self.data.append(rowdata)
+            except:
+                continue
+        file.close()
+        
+    def monthConsumption(self, year, month):
+        retdata = []
+        for row in self.data:
+            if row[0].year == year and row[0].month == month:
+                retdata.append(row[1])
+        return retdata
+#main
+data = EnergiData("energiforbrukning_rodasel.csv")
+yearlyData = [[],[],[],[],[],[]]
+monthlyData = []
+meanArr = []
+i = 0
+for year in range(2017,2020):
+    for month in range(7,9):
+        monthly = data.monthConsumption(year, month)
+        yearlyData[i].append(monthly)
+        meanArr.append(statistics.mean(monthly))
+        yearlyData[i] = monthly
+        #yearlyData[i].append(year)
+        #yearlyData[i].append(month)
+        i += 1
+
+
+
+[p2018, t2018] = stats.ttest_ind(yearlyData[0],yearlyData[2])
+[p2019, t2019] = stats.ttest_ind(yearlyData[2],yearlyData[4])
+[p2018b, t2018b] = stats.ttest_ind(yearlyData[1],yearlyData[3])
+[p2019b, t2019b] = stats.ttest_ind(yearlyData[3],yearlyData[5])
+
+pArr = [0.0 , p2018, p2019 , 0.0,p2018b ,p2019b]
+tArr = [0.0 , t2018, t2019, 0.0, t2018b, t2019b]
+
+i = 0
+y = 0
+
+for month in range(7,9):
+    print("Month:", calendar.month_name[month])
+    for year in range(2017,2020):
+        if(year == 2017):
+            print("\tMean {} : {:6.2f} kWh".format(year, meanArr[y]))
+        else:
+            print("\tMean {} : {:6.2f} kWh   t-value: {:6.2f}  p-value: {:.5f}".format(year, meanArr[y], pArr[i], tArr[i]))
+        i += 1
+        y += 2
+    y = 1
+        
