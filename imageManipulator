@@ -1,0 +1,27 @@
+#Keeps color red of image, rest turns gray
+
+from PIL import Image
+
+def grayValue(red, green, blue):
+    return int(0.3*red + 0.59*green + 0.11*blue)
+    
+
+im = Image.open("apple.jpg")
+im.thumbnail((1024,678))
+(width,height) = im.size
+pixels = im.load()
+
+
+for x in range(width):
+    for y in range(height):
+        # Gets rgb values for a pixel 
+        (r,g,b) = pixels[x,y]
+        #gray = int(0.3*r + 0.59*g + 0.11*b)
+        if(r<(g+b)):
+            gray = grayValue(r, g, b)
+            pixels[x,y] = (r, gray, gray)
+        else:
+            pixels[x,y] = (r, g, b)
+        
+        # Assigns new rgb values to a pixel
+im.save("apple-edited.jpg")
